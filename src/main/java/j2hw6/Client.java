@@ -8,22 +8,22 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Server {
-    private static final int PORT=8089;
+public class Client {
+    private static final int SERVER_PORT=8089;
+    private static final String SERVER_ADR="localhost";
 
 
-    public static void main(String[] args)  {
+
+    public static void main(String[] args) throws IOException {
 
         Socket socket = null;
         Scanner sc = new Scanner(System.in);
-        try (ServerSocket server = new ServerSocket(PORT)) {
-            System.out.println("Server started");
+        try {
+            socket = new Socket(SERVER_ADR, SERVER_PORT);
+        System.out.println("Server is connected");
+        DataInputStream in = new DataInputStream(socket.getInputStream());
+        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
-            socket = server.accept();
-            System.out.println("Client is connected");
-
-            DataInputStream in = new DataInputStream(socket.getInputStream());
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
             Thread thread1= new Thread(() -> {
                 while (true) {
@@ -35,17 +35,16 @@ public class Server {
                 }
             });
             thread1.start();
-
             Thread thread2= new Thread(() -> {
                 while (true) {
                     try {
                         String  str = in.readUTF();
 
                         if (str.equals("/end")) {
-                            System.out.println("Client is disconnected");
+                            System.out.println("server is disconnected");
                             break;
                         }
-                        System.out.println("Client: " + str);
+                        System.out.println("server: " + str);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -58,6 +57,9 @@ public class Server {
             ioException.printStackTrace();
         }
 
-
-        }
     }
+}
+
+
+
+
